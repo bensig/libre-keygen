@@ -10,6 +10,7 @@ const createHash = require('create-hash');
 const ecc = require('eosjs-ecc');
 const wif = require('wif');
 const readline = require('readline');
+const bech32 = require('bech32');
 
 // Get command-line args
 const args = require("minimist")(process.argv.slice(2));
@@ -86,6 +87,32 @@ async function promptUser() {
     });
 }
 
+// Add Bitcoin address derivation function
+function getBitcoinSegwitAddress(publicKey) {
+    // Get SHA256 of public key
+    const sha256Hash = createHash('sha256').update(publicKey).digest();
+    // Get RIPEMD160 of the SHA256
+    const ripemd160Hash = createHash('ripemd160').update(sha256Hash).digest();
+    
+    // Convert the hash to 5-bit words for bech32 encoding
+    const words = bech32.bech32.toWords(ripemd160Hash);
+    // Add version byte (0x00) in front
+    const versionedWords = [0x00, ...words];
+    
+    // Encode as bech32 address
+    return bech32.bech32.encode('bc', versionedWords);
+}
+
+// Add this function near the other helper functions
+function toWIF(privateKey) {
+    const wifObj = {
+        version: 128,
+        privateKey: privateKey,
+        compressed: true
+    };
+    return wif.encode(wifObj);
+}
+
 // Modify the main logic
 async function main() {
     let mnemonic;
@@ -139,29 +166,41 @@ async function main() {
         
         // Use EOS derivation path instead of Ethereum's
         const hdwallet = hdkey.fromMasterSeed(seed);
-        const derivationPath = "m/44'/194'/0'/0/0";  // Changed to EOS path
-        console.log('Derivation path:', derivationPath);
         
-        const wallet = hdwallet.derive(derivationPath);
+        // Different derivation paths for each coin
+        const eosPath = "m/44'/194'/0'/0/0";    // EOS path
+        const btcPath = "m/84'/0'/0'/0/0";      // Bitcoin SegWit path (BIP84)
+        const ethPath = "m/44'/60'/0'/0/0";     // Ethereum path
         
-        // Get both compressed and uncompressed public keys for Ethereum
-        const compressedPublicKey = secp256k1.getPublicKey(wallet.privateKey, true);
-        const uncompressedPublicKey = secp256k1.getPublicKey(wallet.privateKey, false);
+        // Derive wallets for each path
+        const eosWallet = hdwallet.derive(eosPath);
+        const btcWallet = hdwallet.derive(btcPath);
+        const ethWallet = hdwallet.derive(ethPath);
         
-        // Use uncompressed key for Ethereum address
+        // Get keys for each cryptocurrency
+        const compressedPublicKey = secp256k1.getPublicKey(btcWallet.privateKey, true);  // For Bitcoin
+        const uncompressedPublicKey = secp256k1.getPublicKey(ethWallet.privateKey, false);  // For Ethereum
+        
         const address = getEthereumAddress(uncompressedPublicKey);
-        
-        // Make sure we have a valid private key buffer
-        console.log('Wallet private key:', wallet.privateKey);
-        const LibreKeys = getLibreKeys(wallet.privateKey);
-        
-        console.log(`\nResults:`);
-        console.log(`🔑 Private Key:  0x${wallet.privateKey.toString('hex')}`);
-        console.log(`📢 Public Key:   0x${toHex(uncompressedPublicKey)}`);
-        console.log(`🏠 Address:      ${address}`);
-        console.log(`\nLibre Keys:`);
-        console.log(`🔑 Libre Private:  ${LibreKeys.privateKey}`);
-        console.log(`📢 Libre Public:   ${LibreKeys.publicKey}\n`);
+        const bitcoinAddress = getBitcoinSegwitAddress(compressedPublicKey);
+        const LibreKeys = getLibreKeys(eosWallet.privateKey);  // Using EOS wallet for Libre
+
+        console.log(`\n🔑 Master xPub:`);
+        console.log(`${hdwallet.publicExtendedKey}\n`);
+
+        console.log(`₿ Bitcoin Keys:`);
+        console.log(`🔐 Private Key: ${toWIF(btcWallet.privateKey)}`);
+        console.log(`📢 Public Key:  ${toHex(compressedPublicKey)}`);
+        console.log(`🏠 Address:     ${bitcoinAddress}\n`);
+
+        console.log(`⟠ Ethereum Keys:`);
+        console.log(`🔐 Private Key: 0x${ethWallet.privateKey.toString('hex')}`);
+        console.log(`📢 Public Key:  0x${toHex(uncompressedPublicKey)}`);
+        console.log(`🏠 Address:     ${address}\n`);
+
+        console.log(`📎 Libre Keys:`);
+        console.log(`🔐 Private Key: ${LibreKeys.privateKey}`);
+        console.log(`📢 Public Key:  ${LibreKeys.publicKey}\n`);
     } else if (args.private) {
         const privateKey = Buffer.from(args.private.replace(/^0x/, ""), "hex");
         
@@ -207,29 +246,41 @@ async function main() {
         
         // Use EOS derivation path instead of Ethereum's
         const hdwallet = hdkey.fromMasterSeed(seed);
-        const derivationPath = "m/44'/194'/0'/0/0";  // Changed to EOS path
-        console.log('Derivation path:', derivationPath);
         
-        const wallet = hdwallet.derive(derivationPath);
+        // Different derivation paths for each coin
+        const eosPath = "m/44'/194'/0'/0/0";    // EOS path
+        const btcPath = "m/84'/0'/0'/0/0";      // Bitcoin SegWit path (BIP84)
+        const ethPath = "m/44'/60'/0'/0/0";     // Ethereum path
         
-        // Get both compressed and uncompressed public keys for Ethereum
-        const compressedPublicKey = secp256k1.getPublicKey(wallet.privateKey, true);
-        const uncompressedPublicKey = secp256k1.getPublicKey(wallet.privateKey, false);
+        // Derive wallets for each path
+        const eosWallet = hdwallet.derive(eosPath);
+        const btcWallet = hdwallet.derive(btcPath);
+        const ethWallet = hdwallet.derive(ethPath);
         
-        // Use uncompressed key for Ethereum address
+        // Get keys for each cryptocurrency
+        const compressedPublicKey = secp256k1.getPublicKey(btcWallet.privateKey, true);  // For Bitcoin
+        const uncompressedPublicKey = secp256k1.getPublicKey(ethWallet.privateKey, false);  // For Ethereum
+        
         const address = getEthereumAddress(uncompressedPublicKey);
-        
-        // Make sure we have a valid private key buffer
-        console.log('Wallet private key:', wallet.privateKey);
-        const LibreKeys = getLibreKeys(wallet.privateKey);
-        
-        console.log(`\nResults:`);
-        console.log(`🔑 Private Key:  0x${wallet.privateKey.toString('hex')}`);
-        console.log(`📢 Public Key:   0x${toHex(uncompressedPublicKey)}`);
-        console.log(`🏠 Address:      ${address}`);
-        console.log(`\nLibre Keys:`);
-        console.log(`🔑 Libre Private:  ${LibreKeys.privateKey}`);
-        console.log(`📢 Libre Public:   ${LibreKeys.publicKey}\n`);
+        const bitcoinAddress = getBitcoinSegwitAddress(compressedPublicKey);
+        const LibreKeys = getLibreKeys(eosWallet.privateKey);  // Using EOS wallet for Libre
+
+        console.log(`\n🔑 Master xPub:`);
+        console.log(`${hdwallet.publicExtendedKey}\n`);
+
+        console.log(`₿ Bitcoin Keys:`);
+        console.log(`🔐 Private Key: ${toWIF(btcWallet.privateKey)}`);
+        console.log(`📢 Public Key:  ${toHex(compressedPublicKey)}`);
+        console.log(`🏠 Address:     ${bitcoinAddress}\n`);
+
+        console.log(`⟠ Ethereum Keys:`);
+        console.log(`🔐 Private Key: 0x${ethWallet.privateKey.toString('hex')}`);
+        console.log(`📢 Public Key:  0x${toHex(uncompressedPublicKey)}`);
+        console.log(`🏠 Address:     ${address}\n`);
+
+        console.log(`📎 Libre Keys:`);
+        console.log(`🔐 Private Key: ${LibreKeys.privateKey}`);
+        console.log(`📢 Public Key:  ${LibreKeys.publicKey}\n`);
     }
 }
 
