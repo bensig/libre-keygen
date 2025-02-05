@@ -8,23 +8,33 @@ npm install
 ```
 
 ## Usage
-1. Interactive mode
+
+### 1. Generate New Seed Phrase
+```bash
+node generateSeed.js
+```
+This will generate a new random 12-word BIP39 seed phrase.
+
+### 2. Interactive Mode
 ```bash
 node deriveAddress.js
 ```
-2. Seed phrase mode
+
+### 3. Seed Phrase Mode
 ```bash
 node deriveAddress.js --seed="your seed phrase"
 ```
-3. Private key mode
+
+### 4. Private Key Mode
 ```bash
 node deriveAddress.js --private="your private key"
+```
 
-## Output
+## Output Format
 
-The tool will output:
-- Private Key
-- Public Key
+The tool generates the following keys:
+- Private Key (Ethereum)
+- Public Key (Ethereum)
 - Ethereum Address
 - Libre Private Key
 - Libre Public Key
@@ -35,7 +45,10 @@ The tool will output:
 - npm
 
 ## License
+
 This project is licensed under the MIT License. See the LICENSE file for details.
 
 ## Contact
-For questions or feedback, please contact me at bensig on X.
+
+For questions or feedback, please reach out:
+- X (Twitter): [@bensig](https://twitter.com/bensig)
