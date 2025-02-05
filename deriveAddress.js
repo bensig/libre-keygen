@@ -179,11 +179,11 @@ async function main() {
         
         // Get keys for each cryptocurrency
         const compressedPublicKey = secp256k1.getPublicKey(btcWallet.privateKey, true);  // For Bitcoin
-        const uncompressedPublicKey = secp256k1.getPublicKey(ethWallet.privateKey, false);  // For Ethereum
+        const ethCompressedPublicKey = secp256k1.getPublicKey(ethWallet.privateKey, true);  // For Ethereum, now compressed
         
-        const address = getEthereumAddress(uncompressedPublicKey);
+        const address = getEthereumAddress(secp256k1.getPublicKey(ethWallet.privateKey, false));  // Still use uncompressed for address
         const bitcoinAddress = getBitcoinSegwitAddress(compressedPublicKey);
-        const LibreKeys = getLibreKeys(eosWallet.privateKey);  // Using EOS wallet for Libre
+        const LibreKeys = getLibreKeys(eosWallet.privateKey);
 
         console.log(`\n🔑 Master xPub:`);
         console.log(`${hdwallet.publicExtendedKey}\n`);
@@ -195,7 +195,7 @@ async function main() {
 
         console.log(`⟠ Ethereum Keys:`);
         console.log(`🔐 Private Key: 0x${ethWallet.privateKey.toString('hex')}`);
-        console.log(`📢 Public Key:  0x${toHex(uncompressedPublicKey)}`);
+        console.log(`📢 Public Key:  0x${toHex(ethCompressedPublicKey)}`);
         console.log(`🏠 Address:     ${address}\n`);
 
         console.log(`📎 Libre Keys:`);
@@ -259,11 +259,11 @@ async function main() {
         
         // Get keys for each cryptocurrency
         const compressedPublicKey = secp256k1.getPublicKey(btcWallet.privateKey, true);  // For Bitcoin
-        const uncompressedPublicKey = secp256k1.getPublicKey(ethWallet.privateKey, false);  // For Ethereum
+        const ethCompressedPublicKey = secp256k1.getPublicKey(ethWallet.privateKey, true);  // For Ethereum, now compressed
         
-        const address = getEthereumAddress(uncompressedPublicKey);
+        const address = getEthereumAddress(secp256k1.getPublicKey(ethWallet.privateKey, false));  // Still use uncompressed for address
         const bitcoinAddress = getBitcoinSegwitAddress(compressedPublicKey);
-        const LibreKeys = getLibreKeys(eosWallet.privateKey);  // Using EOS wallet for Libre
+        const LibreKeys = getLibreKeys(eosWallet.privateKey);
 
         console.log(`\n🔑 Master xPub:`);
         console.log(`${hdwallet.publicExtendedKey}\n`);
@@ -275,7 +275,7 @@ async function main() {
 
         console.log(`⟠ Ethereum Keys:`);
         console.log(`🔐 Private Key: 0x${ethWallet.privateKey.toString('hex')}`);
-        console.log(`📢 Public Key:  0x${toHex(uncompressedPublicKey)}`);
+        console.log(`📢 Public Key:  0x${toHex(ethCompressedPublicKey)}`);
         console.log(`🏠 Address:     ${address}\n`);
 
         console.log(`📎 Libre Keys:`);
