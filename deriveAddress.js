@@ -185,22 +185,19 @@ async function main() {
         const bitcoinAddress = getBitcoinSegwitAddress(compressedPublicKey);
         const LibreKeys = getLibreKeys(eosWallet.privateKey);
 
-        console.log(`\n🔑 Master xPub:`);
-        console.log(`${hdwallet.publicExtendedKey}\n`);
-
         console.log(`₿ Bitcoin Keys:`);
-        console.log(`🔐 Private Key: ${toWIF(btcWallet.privateKey)}`);
+        console.log(`🏠 Address:     ${bitcoinAddress}`);
         console.log(`📢 Public Key:  ${toHex(compressedPublicKey)}`);
-        console.log(`🏠 Address:     ${bitcoinAddress}\n`);
+        console.log(`🔐 Private Key: ${toWIF(btcWallet.privateKey)}\n`);
 
         console.log(`⟠ Ethereum Keys:`);
-        console.log(`🔐 Private Key: 0x${ethWallet.privateKey.toString('hex')}`);
+        console.log(`🏠 Address:     ${address}`);
         console.log(`📢 Public Key:  0x${toHex(ethCompressedPublicKey)}`);
-        console.log(`🏠 Address:     ${address}\n`);
+        console.log(`🔐 Private Key: 0x${ethWallet.privateKey.toString('hex')}\n`);
 
-        console.log(`📎 Libre Keys:`);
-        console.log(`🔐 Private Key: ${LibreKeys.privateKey}`);
-        console.log(`📢 Public Key:  ${LibreKeys.publicKey}\n`);
+        console.log(`🗽 Libre Keys:`);
+        console.log(`📢 Public Key:  ${LibreKeys.publicKey}`);
+        console.log(`🔐 Private Key: ${LibreKeys.privateKey}\n`);
     } else if (args.private) {
         const privateKey = Buffer.from(args.private.replace(/^0x/, ""), "hex");
         
@@ -265,22 +262,19 @@ async function main() {
         const bitcoinAddress = getBitcoinSegwitAddress(compressedPublicKey);
         const LibreKeys = getLibreKeys(eosWallet.privateKey);
 
-        console.log(`\n🔑 Master xPub:`);
-        console.log(`${hdwallet.publicExtendedKey}\n`);
-
         console.log(`₿ Bitcoin Keys:`);
-        console.log(`🔐 Private Key: ${toWIF(btcWallet.privateKey)}`);
+        console.log(`🏠 Address:     ${bitcoinAddress}`);
         console.log(`📢 Public Key:  ${toHex(compressedPublicKey)}`);
-        console.log(`🏠 Address:     ${bitcoinAddress}\n`);
+        console.log(`🔐 Private Key: ${toWIF(btcWallet.privateKey)}\n`);
 
         console.log(`⟠ Ethereum Keys:`);
-        console.log(`🔐 Private Key: 0x${ethWallet.privateKey.toString('hex')}`);
+        console.log(`🏠 Address:     ${address}`);
         console.log(`📢 Public Key:  0x${toHex(ethCompressedPublicKey)}`);
-        console.log(`🏠 Address:     ${address}\n`);
+        console.log(`🔐 Private Key: 0x${ethWallet.privateKey.toString('hex')}\n`);
 
-        console.log(`📎 Libre Keys:`);
-        console.log(`🔐 Private Key: ${LibreKeys.privateKey}`);
-        console.log(`📢 Public Key:  ${LibreKeys.publicKey}\n`);
+        console.log(`🗽 Libre Keys:`);
+        console.log(`📢 Public Key:  ${LibreKeys.publicKey}`);
+        console.log(`🔐 Private Key: ${LibreKeys.privateKey}\n`);
     }
 }
 
